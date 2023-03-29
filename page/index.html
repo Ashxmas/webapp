@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Faculty Availability Dashboard</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Faculty Availability Dashboard</h1>
+    <table id="availabilityTable">
+        <tr>
+            <th>Faculty Member</th>
+            <th>Status</th>
+        </tr>
+    </table>
+    <script>
+        setInterval(fetchData, 5000); // Fetch data every 5 seconds
+        function fetchData() {
+            fetch("https://minorproject.documents.azure.com:443/", {
+                headers: {
+                    "Authorization": "acyZGWQmABU5rXCjvimBhF0zbZNsoSr4XN9xKzdGlE4wvYKIhVwk4z4wvYuW23lX9yjuSlEXmWI6ACDbOXVHew==",
+                    "x-ms-version": "2018-06-18",
+                    "x-ms-date": new Date().toUTCString(),
+                    "Content-Type": "application/query+json"
+                },
+                method: "POST",
+                body: JSON.stringify({
+                    query: "SELECT c.address, c.status FROM c"
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const availabilityTable = document.getElementById("availabilityTable");
+                // Clear the table
+                while (availabilityTable.rows.length > 1) {
+                    availabilityTable.deleteRow(1);
+                }
+                // Add new rows
+                data.forEach(doc => {
+                    const row = availabilityTable.insertRow();
+                    const addressCell = row.insertCell();
+                    addressCell.innerText = doc.address;
+                    const statusCell = row.insertCell();
+                    statusCell.innerText = doc.status;
+                    statusCell.style.backgroundColor = doc.status === "available" ? "green" : "red"; // Color the status cell based on the status value
+                });
+            })
+            .catch(error => console.log(error));
+        }
+    </script>
+</body>
+</html>
