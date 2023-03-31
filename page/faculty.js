@@ -1,6 +1,6 @@
 setInterval(fetchData, 5000); // Fetch data every 5 seconds
 function fetchData() {
-    fetch("https://your-cosmosdb-account.documents.azure.com:443/dbs/FacultyAvailabilityDB/colls/FacultyAvailabilityCollection/docs", {
+    fetch("https://faculty-availability-dashboard.documents.azure.com:443/dbs/FacultyAvailabilityDB/colls/FacultyAvailabilityCollection/docs", {
         headers: {
             "Authorization": "your-cosmosdb-key",
             "x-ms-version": "2018-06-18",
