@@ -1,0 +1,5 @@
+{
+  "cosmosdb": {
+    "connectionString": "AccountEndpoint=<https://faculty-availability-dashboard.documents.azure.com:443/>;AccountKey=<vMafL5RxxehjTBVymsnEtahAYAhnDYGEBYJAzJovmlbVIpPQnLILiCoqH9HSOV4tY4BiJP3DWv8jACDbhi0nUA==>;Database=<FacultyAvailabilityDB>"
+  }
+}
