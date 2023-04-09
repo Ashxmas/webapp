@@ -1,33 +1,50 @@
-setInterval(fetchData, 5000); // Fetch data every 5 seconds
-function fetchData() {
-    fetch("https://faculty-availability-dashboard.documents.azure.com:443/dbs/FacultyAvailabilityDB/colls/FacultyAvailabilityCollection/docs", {
-        headers: {
-            "Authorization": "vMafL5RxxehjTBVymsnEtahAYAhnDYGEBYJAzJovmlbVIpPQnLILiCoqH9HSOV4tY4BiJP3DWv8jACDbhi0nUA==",
-            "x-ms-version": "2018-06-18",
-            "x-ms-date": new Date().toUTCString(),
-            "Content-Type": "application/query+json"
-        },
-        method: "POST",
-        body: JSON.stringify({
-            query: "SELECT c.address, c.status FROM c"
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        const availabilityTable = document.getElementById("availabilityTable");
-        // Clear the table
-        while (availabilityTable.rows.length > 1) {
-            availabilityTable.deleteRow(1);
-        }
-        // Add new rows
-        data.forEach(doc => {
-            const row = availabilityTable.insertRow();
-            const addressCell = row.insertCell();
-            addressCell.innerText = doc.address;
-            const statusCell = row.insertCell();
-            statusCell.innerText = doc.status;
-            statusCell.style.backgroundColor = doc.status === "available" ? "green" : "red"; // Color the status cell based on the status value
-        });
-    })
-    .catch(error => console.log(error));
+// Retrieve all records from Cosmos DB
+const endpoint = "https://faculty-availability-dashboard.documents.azure.com:443/";
+const key = "vMafL5RxxehjTBVymsnEtahAYAhnDYGEBYJAzJovmlbVIpPQnLILiCoqH9HSOV4tY4BiJP3DWv8jACDbhi0nUA==";
+const database = "FacultyAvailabilityDB";
+const container = "FacultyAvailabilityCollection";
+
+const cosmos = require('@azure/cosmos');
+
+const { CosmosClient } = cosmos;
+
+const client = new CosmosClient({ endpoint, key });
+
+async function getRecords() {
+  const query = "SELECT * FROM c";
+  const containerClient = client.database(database).container(container);
+  const { resources: items } = await containerClient.items.query(query).fetchAll();
+  return items;
 }
+
+// Display records in a HTML table
+const availabilityTable = document.getElementById("availabilityTable");
+
+async function displayRecords() {
+  const records = await getRecords();
+  records.forEach((record) => {
+    const row = availabilityTable.insertRow();
+    const facultyNameCell = row.insertCell();
+    const statusCell = row.insertCell();
+    facultyNameCell.innerHTML = record.facultyName;
+    statusCell.innerHTML = record.status;
+    if (record.status.toLowerCase() === "available") {
+      statusCell.style.backgroundColor = "green";
+    } else {
+      statusCell.style.backgroundColor = "red";
+    }
+  });
+}
+
+// Refresh records every 5 seconds
+setInterval(() => {
+  availabilityTable.innerHTML = `
+    <tr>
+      <th>Faculty Member</th>
+      <th>Status</th>
+    </tr>
+  `;
+  displayRecords();
+}, 5000);
+
+displayRecords();
