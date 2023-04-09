@@ -1,58 +1,66 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Faculty Availability Dashboard</title>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Faculty Availability Dashboard</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
-	<h1>Faculty Availability Dashboard</h1>
-	<table id="myTable">
-		<thead>
-			<tr>
-				<th>Name</th>
-                		<th>Status</th>
-
-			</tr>
-		</thead>
-		<tbody>
-		</tbody>
-	</table>
-
-	<script>
-		$(document).ready(function () {
-			// Define the endpoint and key for your Cosmos DB account
-			var endpoint = "https://faculty-availability-dashboard.documents.azure.com:443/";
-			var key = "KsbXgkqIoVF5K0fFm2hPgvLRQNtyE4Fno1z1xAzM1w890h0EoPoqicJ48JbftTIfujixCoBpwOGvACDbd6vZpg==";
-
-			// Define the database and collection you want to query
-			var databaseId = "FacultyAvailabilityDB";
-			var collectionId = "FacultyAvailabilityCollection";
-
-			// Define the query to fetch all documents in the collection
-			var query = "SELECT * FROM c";
-
-			// Create a Cosmos DB client object
-			var client = new CosmosClient({ endpoint: endpoint, key: key });
-
-			// Query the database and display the results in the table
-			client
-				.database(databaseId)
-				.container(collectionId)
-				.items.query(query)
-				.fetchAll()
-				.then(function (results) {
-					var table = $("#myTable tbody");
-					results.forEach(function (item) {
-						var row = $("<tr>");
-						$("<td>").text(item.name).appendTo(row);
-						$("<td>").text(item.status).appendTo(row);
-						row.appendTo(table);
-					});
-				})
-				.catch(function (error) {
-					console.error(error);
-				});
-		});
-	</script>
+    <h1>Faculty Availability Dashboard</h1>
+    <table id="availabilityTable">
+        <tr>
+            <th>Faculty Member</th>
+            <th>Status</th>
+        </tr>
+    </table>
+    <script>
+        setInterval(fetchData, 5000); // Fetch data every 5 seconds
+        function fetchData() {
+            fetch("https://faculty-availability-dashboard.documents.azure.com:443/dbs/FacultyAvailabilityDB/colls/FacultyAvailabilityCollection/docs", {
+                headers: {
+                    "Authorization": "KsbXgkqIoVF5K0fFm2hPgvLRQNtyE4Fno1z1xAzM1w890h0EoPoqicJ48JbftTIfujixCoBpwOGvACDbd6vZpg==",
+                    "x-ms-version": "2018-06-18",
+                    "x-ms-date": new Date().toUTCString(),
+                    "Content-Type": "application/query+json"
+                },
+                method: "POST",
+                body: JSON.stringify({
+                    query: "SELECT c.name, c.address, c.status FROM c"
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const availabilityTable = document.getElementById("availabilityTable");
+                // Clear the table
+                while (availabilityTable.rows.length > 1) {
+                    availabilityTable.deleteRow(1);
+                }
+                // Add new rows
+                data.forEach(doc => {
+                    const row = availabilityTable.insertRow();
+                    const nameCell = row.insertCell();
+                    nameCell.innerText = doc.name;
+                    const statusCell = row.insertCell();
+                    statusCell.innerText = doc.status;
+                    statusCell.style.backgroundColor = doc.status === "available" ? "green" : "red"; // Color the status cell based on the status value
+                });
+            })
+            .catch(error => console.log(error));
+        }
+    </script>
 </body>
 </html>
+
