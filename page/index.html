@@ -30,10 +30,12 @@
         setInterval(fetchData, 10000); // Fetch data every 10 seconds
         function fetchData() {
             fetch("https://faculty-availability-dashboard.documents.azure.com:443/dbs/FacultyAvailabilityDB/colls/FacultyAvailabilityCollection/docs", {
-
+                globalHeaders: {
+                     "Access-Control-Allow-Origin": "*",
+                     "Access-Control-Allow-Credentials": true,
+                     "Access-Control-Allow-Methods": "GET, OPTIONS"
+                },
                 headers: {
-                    "Access-Control-Allow-Origin": "https://white-grass-0b23dde00.3.azurestaticapps.net",
-                    "Access-Control-Allow-Credentials": true,
                     "Authorization": "KsbXgkqIoVF5K0fFm2hPgvLRQNtyE4Fno1z1xAzM1w890h0EoPoqicJ48JbftTIfujixCoBpwOGvACDbd6vZpg==",
                     "x-ms-version": "2018-06-18",
                     "x-ms-date": new Date().toUTCString(),
@@ -41,6 +43,7 @@
   
                 },
                 method: "POST",
+                mode: "cors",
                 body: JSON.stringify({
                     query: "SELECT c.name, c.address, c.status FROM c"
                 })
