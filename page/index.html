@@ -37,6 +37,7 @@
                     "Content-Type": "application/query+json",
                 },
                 method: "POST",
+                mode: "cors", // Set the mode option to "cors"
                 body: JSON.stringify({
                     query: "SELECT c.name, c.address, c.status FROM c"
                 })
