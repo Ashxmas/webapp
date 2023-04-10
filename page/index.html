@@ -29,7 +29,7 @@
     <script>
         setInterval(fetchData, 10000); // Fetch data every 10 seconds
         function fetchData() {
-            fetch("https://faculty-availability-dashboard.documents.azure.com:443/dbs/FacultyAvailabilityDB/colls/FacultyAvailabilityCollection/docs", {
+            fetch("https://cors-anywhere.herokuapp.com/faculty-availability-dashboard.documents.azure.com:443/dbs/FacultyAvailabilityDB/colls/FacultyAvailabilityCollection/docs", {
                 headers: {
                     "Authorization": "KsbXgkqIoVF5K0fFm2hPgvLRQNtyE4Fno1z1xAzM1w890h0EoPoqicJ48JbftTIfujixCoBpwOGvACDbd6vZpg==",
                     "x-ms-version": "2018-06-18",
