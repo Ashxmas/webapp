@@ -1,77 +1,81 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="utf-8">
     <title>Faculty Availability Dashboard</title>
     <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            text-align: left;
-            padding: 8px;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .error {
-            color: red;
-        }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      th, td {
+        text-align: left;
+        padding: 8px;
+      }
+
+      tr:nth-child(even){background-color: #f2f2f2}
+
+      th {
+        background-color: #4CAF50;
+        color: white;
+      }
+
+      #status-available {
+        color: green;
+      }
+
+      #status-unavailable {
+        color: red;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Faculty Availability Dashboard</h1>
-    <table id="availabilityTable">
+    <table>
+      <thead>
         <tr>
-            <th>Faculty Member</th>
-            <th>Status</th>
+          <th>Name</th>
+          <th>Status</th>
         </tr>
+      </thead>
+      <tbody id="faculty-list">
+        <!-- Faculty list will be added dynamically -->
+      </tbody>
     </table>
-    <div id="errorMessage"></div>
     <script>
-        const endpointUrl = "https://cors-anywhere.herokuapp.com/faculty-availability-dashboard.documents.azure.com:443/dbs/FacultyAvailabilityDB/colls/FacultyAvailabilityCollection/docs";
-        const credentials = "KsbXgkqIoVF5K0fFm2hPgvLRQNtyE4Fno1z1xAzM1w890h0EoPoqicJ48JbftTIfujixCoBpwOGvACDbd6vZpg==";
-        const headers = {
-            "Authorization": credentials,
-            "x-ms-version": "2018-06-18",
-            "x-ms-date": new Date().toUTCString(),
-            "Content-Type": "application/query+json",
-        };
-        const fetchData = () => {
-            fetch(endpointUrl, {
-                headers: headers,
-                method: "POST",
-                mode: "cors",
-                body: JSON.stringify({
-                    query: "SELECT c.name, c.address, c.status FROM c"
-                })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Error fetching data: " + response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                const availabilityTable = document.getElementById("availabilityTable");
-                // Clear the table
-                while (availabilityTable.rows.length > 1) {
-                    availabilityTable.deleteRow(1);
-                }
-                // Add new rows
-                data.forEach(doc => {
-                    const row = availabilityTable.insertRow();
-                    const nameCell = row.insertCell();
-                    nameCell.innerText = doc.name;
-                    const statusCell = row.insertCell();
-                    statusCell.innerText = doc.status;
-                    statusCell.style.backgroundColor = doc.status === "available" ? "green" : "red"; // Color the status cell based on the status value
-                });
-            })
-            .catch(error => console.log(error));
-        }
+      // Get the faculty list from the server and update the table
+      function updateFacultyList() {
+        fetch('https://<function-name>.azurewebsites.net/api/<function-endpoint>?code=<function-key>')
+          .then(response => response.json())
+          .then(data => {
+            // Clear the existing table rows
+            const tableBody = document.querySelector('#faculty-list');
+            tableBody.innerHTML = '';
+
+            // Add a row for each faculty
+            data.forEach(faculty => {
+              const row = tableBody.insertRow(-1);
+              const nameCell = row.insertCell(0);
+              const statusCell = row.insertCell(1);
+
+              nameCell.innerText = faculty.name;
+
+              // Display the status as "Available" or "Unavailable"
+              if (faculty.status === 'available') {
+                statusCell.innerText = 'Available';
+                statusCell.setAttribute('id', 'status-available');
+              } else {
+                statusCell.innerText = 'Unavailable';
+                statusCell.setAttribute('id', 'status-unavailable');
+              }
+            });
+          })
+          .catch(error => console.error(error));
+      }
+
+      // Update the faculty list every 5 seconds
+      setInterval(updateFacultyList, 5000);
     </script>
-</body>
+  </body>
 </html>
