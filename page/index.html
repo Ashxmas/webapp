@@ -21,11 +21,11 @@
         color: white;
       }
 
-      #status-available {
+      .status-available {  /* changed ID to class */
         color: green;
       }
 
-      #status-unavailable {
+      .status-unavailable {  /* changed ID to class */
         color: red;
       }
     </style>
@@ -64,10 +64,10 @@
               // Display the status as "Available" or "Unavailable"
               if (faculty.status === 'available') {
                 statusCell.innerText = 'Available';
-                statusCell.setAttribute('id', 'status-available');
+                statusCell.classList.add('status-available');  /* updated to add class */
               } else {
                 statusCell.innerText = 'Unavailable';
-                statusCell.setAttribute('id', 'status-unavailable');
+                statusCell.classList.add('status-unavailable');  /* updated to add class */
               }
             });
           })
