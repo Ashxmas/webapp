@@ -17,15 +17,15 @@
       tr:nth-child(even){background-color: #f2f2f2}
 
       th {
-        background-color: #4CAF50;
+        background-color: #5e5e5e;
         color: white;
       }
 
-      .status-available {  /* changed ID to class */
+      #status-available {
         color: green;
       }
 
-      .status-unavailable {  /* changed ID to class */
+      #status-unavailable {
         color: red;
       }
     </style>
@@ -64,10 +64,10 @@
               // Display the status as "Available" or "Unavailable"
               if (faculty.status === 'available') {
                 statusCell.innerText = 'Available';
-                statusCell.classList.add('status-available');  /* updated to add class */
+                statusCell.setAttribute('id', 'status-available');
               } else {
                 statusCell.innerText = 'Unavailable';
-                statusCell.classList.add('status-unavailable');  /* updated to add class */
+                statusCell.setAttribute('id', 'status-unavailable');
               }
             });
           })
