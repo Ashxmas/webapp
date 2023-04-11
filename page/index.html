@@ -46,7 +46,7 @@
     <script>
       // Get the faculty list from the server and update the table
       function updateFacultyList() {
-        fetch('https://<function-name>.azurewebsites.net/api/<function-endpoint>?code=<function-key>')
+        fetch('https://faculty-availability-dashboard.azurewebsites.net/api/updateFacultyList?code=JMBzGqPt0sbJwdUfDj5G_6Ds8oMAI-EgDBzG6PUR-rr6AzFuUVRe7w==')
           .then(response => response.json())
           .then(data => {
             // Clear the existing table rows
